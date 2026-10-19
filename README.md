@@ -54,7 +54,9 @@ Cada propiedad pertenece a una de tres categorías, y el **Panel** (portada) las
 - **Venta**: sin reservas; estados disponible, reservada, en arras y vendida.
 
 Las reservas y los gastos fijos se gestionan dentro de la ficha de cada propiedad. Desde «Acciones rápidas»
-se puede crear una reserva, importar reservas en CSV o agregar una propiedad.
+se puede crear una reserva, agregar una propiedad e importar desde CSV propiedades, habitaciones (con sus contratos)
+y reservas, en ese orden: las habitaciones y las reservas buscan su piso por nombre o código. Cada importador tiene
+su plantilla, enseña una vista previa con los errores por fila y acepta los CSV de Excel en español (`;` y acentos).
 
 ## Estructura
 

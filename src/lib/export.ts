@@ -58,7 +58,7 @@ export async function downloadXLSX(name: string, sheet: string, header: string[]
 export const normKey = (s: string) =>
   s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/º|ª/g, "").trim().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
 
-/** Acepta "1.234,56", "1234,56", "1234.56", "1,234.56", "€ 12" … */
+/** Acepta "1.234,56", "1234,56", "1234.56", "1,234.56", "285.000", "€ 12" … */
 export function parseNum(raw: string | undefined | null): number | null {
   if (raw == null) return null;
   let s = String(raw).replace(/[€\s]/g, "");
@@ -66,6 +66,8 @@ export function parseNum(raw: string | undefined | null): number | null {
   const lastComma = s.lastIndexOf(",");
   const lastDot = s.lastIndexOf(".");
   if (lastComma > lastDot) s = s.replace(/\./g, "").replace(",", ".");
+  // Sin coma y con grupos de 3 cifras tras cada punto («285.000», «1.250.000»): puntos de miles.
+  else if (lastComma < 0 && /^-?[1-9]\d{0,2}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, "");
   else s = s.replace(/,/g, "");
   const n = Number(s);
   return isFinite(n) ? n : null;

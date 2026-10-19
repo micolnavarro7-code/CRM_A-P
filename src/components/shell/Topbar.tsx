@@ -10,7 +10,9 @@ import type { Room } from "@/lib/types";
 import { BookingForm } from "../bookings/BookingForm";
 import { CsvImport } from "../bookings/CsvImport";
 import { fichaUrl } from "../domain";
+import { PropertiesImport } from "../properties/PropertiesImport";
 import { PropertyForm } from "../properties/PropertyForm";
+import { RoomsImport } from "../rooms/RoomsImport";
 import { cx } from "../ui";
 import { SearchInput, SearchResults } from "./Search";
 import { useUI } from "./ui-context";
@@ -39,7 +41,7 @@ function Dropdown({ trigger, children, align = "right", width = "w-72" }: { trig
 
 const iconBtn = "relative grid size-10 place-items-center rounded-xl text-ink-2 transition hover:bg-page hover:text-ink";
 
-type Accion = "reserva" | "importar" | "propiedad";
+type Accion = "reserva" | "importar" | "propiedad" | "importar-propiedades" | "importar-habitaciones";
 
 export function Topbar({ onMenu }: { onMenu: () => void }) {
   const { db } = useData();
@@ -95,10 +97,13 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
     return [...sinContrato, ...contratos, ...facturas];
   }, [db.bookings, db.rooms, db.properties]);
 
-  const acciones: { v: Accion; label: string; icon: typeof Zap }[] = [
+  // Las importaciones van juntas y en el orden en que hay que hacerlas: primero los pisos.
+  const acciones: { v: Accion; label: string; icon: typeof Zap; sep?: boolean }[] = [
     { v: "reserva", label: "Nueva reserva", icon: CalendarPlus },
-    { v: "importar", label: "Importar reservas (CSV)", icon: FileUp },
     { v: "propiedad", label: "Agregar propiedad", icon: Building2 },
+    { v: "importar-propiedades", label: "Importar propiedades (CSV)", icon: FileUp, sep: true },
+    { v: "importar-habitaciones", label: "Importar habitaciones (CSV)", icon: FileUp },
+    { v: "importar", label: "Importar reservas (CSV)", icon: FileUp },
   ];
 
   return (
@@ -122,7 +127,7 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
           {(close) => (
             <ul className="p-1.5">
               {acciones.map((a) => (
-                <li key={a.v}>
+                <li key={a.v} className={cx(a.sep && "mt-1.5 border-t border-line pt-1.5")}>
                   <button
                     type="button"
                     onClick={() => {
@@ -192,6 +197,8 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
       {accion === "reserva" && <BookingForm onClose={() => setAccion(null)} />}
       {accion === "importar" && <CsvImport onClose={() => setAccion(null)} />}
       {accion === "propiedad" && <PropertyForm open onClose={() => setAccion(null)} />}
+      {accion === "importar-propiedades" && <PropertiesImport onClose={() => setAccion(null)} />}
+      {accion === "importar-habitaciones" && <RoomsImport onClose={() => setAccion(null)} />}
     </>
   );
 }
